@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { from, Observable, of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { IServiceResponse } from './models/service-response.interface';
@@ -9,13 +9,13 @@ describe('AppComponent', () => {
   let component: AppComponent;
   let service: PracticeService;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
       declarations: [
         AppComponent
       ],
     }).compileComponents();
-  });
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
@@ -70,6 +70,29 @@ describe('AppComponent', () => {
     expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeFalsy();    
     expect(
       fixture.debugElement.nativeElement.querySelector('#display-data-id').textContent
-      ).toBe(testReturnValue.data);
+    ).toBe(testReturnValue.data);
+    flush();
+  }));
+
+  it('should display the loading spinner when loading and then display the loaded data when complete', fakeAsync(() => {
+    const testReturnValue: IServiceResponse = { data: 'test return value' };
+    spyOn(service, 'practiceServiceCall').and.callFake(() => {
+      return from(
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(testReturnValue);
+          })
+        }) 
+      ) as Observable<IServiceResponse>;
+    });
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeTruthy();
+    tick();
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeFalsy();    
+    expect(
+      fixture.debugElement.nativeElement.querySelector('#display-data-id').textContent
+    ).toBe(testReturnValue.data);
+    flush();
   }));
 });

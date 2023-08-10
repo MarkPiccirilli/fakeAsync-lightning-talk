@@ -3,6 +3,7 @@ import { from, Observable, of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { IServiceResponse } from './models/service-response.interface';
 import { PracticeService } from './services/practice.service';
+import { returnFakeObservable, returnFakePromise } from './util/test-util';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -85,6 +86,38 @@ describe('AppComponent', () => {
         }) 
       ) as Observable<IServiceResponse>;
     });
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeTruthy();
+    tick();
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeFalsy();    
+    expect(
+      fixture.debugElement.nativeElement.querySelector('#display-data-id').textContent
+    ).toBe(testReturnValue.data);
+    flush();
+  }));
+
+  it('should display the loading spinner when loading and then display the loaded data when complete (util function)', fakeAsync(() => {
+    const testReturnValue: IServiceResponse = { data: 'test return value' };
+    const timeout = 1000;
+    spyOn(service, 'practiceServiceCall').and.callFake(() => returnFakeObservable(testReturnValue, timeout));
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeTruthy();
+    tick(500);
+    fixture.detectChanges(); 
+    expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeTruthy(); 
+    tick(500);
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeFalsy();    
+    expect(
+      fixture.debugElement.nativeElement.querySelector('#display-data-id').textContent
+    ).toBe(testReturnValue.data);
+    flush();
+  }));
+
+  it('should display the loading spinner when loading and then display the loaded data when complete', fakeAsync(() => {
+    const testReturnValue: IServiceResponse = { data: 'test return value' };
+    spyOn(service, 'practiceServiceCall').and.callFake(() => returnFakeObservable(testReturnValue));
     fixture.detectChanges();
     expect(fixture.debugElement.nativeElement.querySelector('#loading-spinner-id')).toBeTruthy();
     tick();

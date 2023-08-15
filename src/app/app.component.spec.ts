@@ -3,7 +3,7 @@ import { from, Observable, of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { IServiceResponse } from './models/service-response.interface';
 import { PracticeService } from './services/practice.service';
-import { returnFakeObservable, returnFakePromise } from './util/test-util';
+import { returnFakeObservable } from './util/test-util';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;

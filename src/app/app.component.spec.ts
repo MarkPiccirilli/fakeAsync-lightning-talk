@@ -27,7 +27,9 @@ describe('AppComponent', () => {
   it('should create the app', () => {
     expect(component).toBeTruthy();
   });
-
+  
+  //the following two tests are not ideal because you have to explicitly set the isLoading class variable.
+  //the component should be setting this variable
   it("should display the loading spinner if data is loading", () => {
     component.isLoading = true;
     fixture.detectChanges();

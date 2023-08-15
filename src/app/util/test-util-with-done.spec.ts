@@ -1,6 +1,7 @@
 import { returnFakeObservable, returnFakePromise } from './test-util';
 
-describe('Bad Test Util', () => {
+//these tests can be slow because you have to wait for the asynchronous calls to complete
+describe('Test Util with done', () => {
   it('should return the correct return value in the correct time when returnFakeObservable is called', (done) => {
     const testReturnValue = "Test return value";
     const testTimeout = 2000;
